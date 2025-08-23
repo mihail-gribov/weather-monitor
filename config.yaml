@@ -1,0 +1,87 @@
+# Weather monitoring configuration
+regions:
+  # Активные метеостанции МО (с актуальными данными)
+  moskva_station:
+    name: "Moskva Station"
+    latitude: 55.833
+    longitude: 37.617
+  ostafyevo:
+    name: "Ostafyevo / Yazovo"
+    latitude: 55.512
+    longitude: 37.507
+  perepechino:
+    name: "Moscow / Perepechino / Novosëlki"
+    latitude: 55.967
+    longitude: 37.400
+  annino:
+    name: "Moscow / Annino"
+    latitude: 55.583
+    longitude: 37.267
+  novoye_selo:
+    name: "Moscow / Novoye Selo / Pervomayka"
+    latitude: 55.550
+    longitude: 38.150
+  lyamtsino:
+    name: "Moscow / Lyamtsino"
+    latitude: 55.400
+    longitude: 37.900
+  
+  # Исторические станции МО (могут иметь ограниченные данные)
+  novo_jerusalim:
+    name: "Novo-Jerusalim"
+    latitude: 55.900
+    longitude: 36.817
+  pavlovskij_posad:
+    name: "Pavlovskij Posad"
+    latitude: 55.767
+    longitude: 38.683
+  naro_fominsk:
+    name: "Naro-Fominsk"
+    latitude: 55.383
+    longitude: 36.700
+  klin:
+    name: "Klin"
+    latitude: 56.350
+    longitude: 36.750
+  serpuhov:
+    name: "Serpuhov"
+    latitude: 54.933
+    longitude: 37.467
+  kolomna:
+    name: "Kolomna"
+    latitude: 55.133
+    longitude: 38.733
+  aleksandrov:
+    name: "Aleksandrov"
+    latitude: 56.400
+    longitude: 38.750
+  mozajsk:
+    name: "Mozajsk"
+    latitude: 55.517
+    longitude: 36.000
+  kasira:
+    name: "Kasira"
+    latitude: 54.833
+    longitude: 38.150
+  malojaroslavec:
+    name: "Malojaroslavec"
+    latitude: 55.017
+    longitude: 36.483
+  volokolamsk:
+    name: "Volokolamsk"
+    latitude: 56.017
+    longitude: 35.933
+  savelovo:
+    name: "Savelovo"
+    latitude: 56.867
+    longitude: 37.383
+  
+  # Белград
+  belgrade:
+    name: "Belgrade"
+    latitude: 44.79
+    longitude: 20.45
+
+# Database settings
+database:
+  path: "weather_data.db"

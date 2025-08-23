@@ -1,0 +1,81 @@
+#!/bin/bash
+
+# Weather Monitor Cron Wrapper Script Template
+# Copy this file to run_weather_monitor.sh and adjust paths for your system
+
+# Set strict error handling
+set -euo pipefail
+
+# Define paths (ADJUST THESE TO YOUR ACTUAL PATHS)
+PROJECT_DIR="/path/to/your/weather-monitor"           # Change this!
+PYTHON_PATH="/path/to/your/python"                    # Change this!
+LOG_DIR="$PROJECT_DIR/logs"
+LOG_FILE="$LOG_DIR/weather_monitor.log"
+
+# Create log directory if it doesn't exist
+mkdir -p "$LOG_DIR" 2>/dev/null || true
+
+# Function to log messages with timestamp
+log_message() {
+    echo "[$(date '+%Y-%m-%d %H:%M:%S')] $1" >> "$LOG_FILE"
+}
+
+# Function to log errors
+log_error() {
+    echo "[$(date '+%Y-%m-%d %H:%M:%S')] ERROR: $1" >> "$LOG_FILE"
+}
+
+# Start execution
+log_message "Starting weather monitor cron job"
+
+# Check if project directory exists
+if [ ! -d "$PROJECT_DIR" ]; then
+    log_error "Project directory not found: $PROJECT_DIR"
+    exit 1
+fi
+
+# Change to project directory
+cd "$PROJECT_DIR" || {
+    log_error "Failed to change to project directory: $PROJECT_DIR"
+    exit 1
+}
+
+# Check if Python interpreter exists
+if [ ! -f "$PYTHON_PATH" ]; then
+    log_error "Python interpreter not found: $PYTHON_PATH"
+    exit 1
+fi
+
+# Check if main script exists
+if [ ! -f "weather_monitor.py" ]; then
+    log_error "Main script not found: weather_monitor.py"
+    exit 1
+fi
+
+# Set environment variables that might be needed
+# ADJUST THE PATH BELOW TO MATCH YOUR SYSTEM
+export PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
+export PYTHONPATH="$PROJECT_DIR${PYTHONPATH:+:$PYTHONPATH}"
+export HOME="$HOME"
+
+# Parse command line arguments (default to 6 hours)
+HOURS=${1:-6}
+VERBOSE=${2:-""}
+
+# Build command
+CMD="$PYTHON_PATH weather_monitor.py fetch-weather --hours $HOURS"
+if [ "$VERBOSE" = "--verbose" ]; then
+    CMD="$CMD --verbose"
+fi
+
+# Execute the weather monitor script
+log_message "Executing: $CMD"
+
+if $CMD >> "$LOG_FILE" 2>&1; then
+    log_message "Weather monitor completed successfully"
+    exit 0
+else
+    EXIT_CODE=$?
+    log_error "Weather monitor failed with exit code: $EXIT_CODE"
+    exit $EXIT_CODE
+fi

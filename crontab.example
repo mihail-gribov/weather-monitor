@@ -1,0 +1,25 @@
+# Example crontab entries for weather monitoring
+
+# РЕКОМЕНДУЕМЫЕ НАСТРОЙКИ:
+
+# Каждые 30 минут с 6-часовым периодом (ОПТИМАЛЬНО)
+*/30 * * * * cd /home/mike/Projects/weather-monitor && python weather_monitor.py fetch-weather --hours 6 >> /var/log/weather_monitor.log 2>&1
+
+# Каждые 15 минут с 3-часовым периодом (максимальная актуальность)
+*/15 * * * * cd /home/mike/Projects/weather-monitor && python weather_monitor.py fetch-weather --hours 3 >> /var/log/weather_monitor.log 2>&1
+
+# Каждый час с 12-часовым периодом (экономия ресурсов)
+0 * * * * cd /home/mike/Projects/weather-monitor && python weather_monitor.py fetch-weather --hours 12 >> /var/log/weather_monitor.log 2>&1
+
+# УСТАРЕВШИЕ НАСТРОЙКИ (не рекомендуется):
+# */30 * * * * cd /home/mike/Projects/weather-monitor && python weather_monitor.py fetch-weather >> /var/log/weather_monitor.log 2>&1
+
+# ПРЕИМУЩЕСТВА 6-ЧАСОВОГО ПЕРИОДА:
+# • Гарантированно захватывает все новые данные
+# • Компенсирует задержки в обновлении станций (до 2.5 часов)
+# • Устойчив к временным сбоям сети
+# • Оптимальный баланс между полнотой данных и дублированием
+
+# To install, edit your crontab with:
+# crontab -e
+# Then add one of the recommended lines above

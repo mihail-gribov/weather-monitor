@@ -1,0 +1,74 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+
+# Virtual environments
+.env
+.venv
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+
+# IDE
+.idea/
+.vscode/
+
+# Weather Monitor - Database files
+*.db
+*.sqlite
+*.sqlite3
+weather_data.db*
+
+# Weather Monitor - Log files
+*.log
+weather_monitor.log*
+logs/
+
+# Weather Monitor - Export files (generated data)
+*.csv
+*.tsv
+*.json
+*.xml
+*.txt
+*.sql
+!requirements.txt
+!README.md
+!crontab.example
+
+# Weather Monitor - Configuration files with sensitive data
+config_local.yaml
+config_production.yaml
+.secrets
+
+# Weather Monitor - Cron wrapper script (auto-generated)
+run_weather_monitor.sh
+run_weather_monitor.sh.backup
+
+# Project specification (technical requirements)
+.specification/
+
+# Temporary files
+temp/
+tmp/
+*.tmp
+*.temp
+*.bak
+*.backup
+*~
+
+# OS specific files
+.DS_Store
+.DS_Store?
+._*
+Thumbs.db
+
+# Test and analysis files
+test_*.py
+*_test.py
+tests/
+check_*.py
+analyze_*.py
