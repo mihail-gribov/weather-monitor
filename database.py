@@ -2,6 +2,7 @@
 
 import sqlite3
 import logging
+import math
 from datetime import datetime
 from typing import Optional, Dict, Any
 
@@ -13,6 +14,13 @@ class WeatherDatabase:
         """Initialize database connection and create tables if needed."""
         self.db_path = db_path
         self._init_database()
+    
+    def _safe_get_value(self, weather_row: Dict[str, Any], key: str) -> Optional[float]:
+        """Safely get value from weather_row, converting NaN to None."""
+        value = weather_row.get(key)
+        if value is not None and (math.isnan(value) if isinstance(value, (int, float)) else False):
+            return None
+        return value
     
     def _init_database(self):
         """Create weather data table if it doesn't exist."""
@@ -34,10 +42,18 @@ class WeatherDatabase:
                     pressure REAL,
                     wind_speed REAL,
                     wind_direction REAL,
+                    cloud_cover REAL,
+                    snow_depth REAL,
+                    wind_gust REAL,
+                    sunshine_duration REAL,
                     created_at TEXT NOT NULL,
                     UNIQUE(region_code, timestamp)
                 )
             ''')
+            
+            # Migrate existing database to add new columns if they don't exist
+            self._migrate_database(cursor)
+            
             conn.commit()
             logging.info("Database initialized successfully")
         except Exception as e:
@@ -45,6 +61,27 @@ class WeatherDatabase:
             raise
         finally:
             conn.close()
+    
+    def _migrate_database(self, cursor):
+        """Add new columns to existing database if they don't exist."""
+        # Check if new columns exist and add them if they don't
+        new_columns = [
+            ('cloud_cover', 'REAL'),
+            ('snow_depth', 'REAL'),
+            ('wind_gust', 'REAL'),
+            ('sunshine_duration', 'REAL')
+        ]
+        
+        for column_name, column_type in new_columns:
+            try:
+                cursor.execute(f'ALTER TABLE weather_data ADD COLUMN {column_name} {column_type}')
+                logging.info(f"Added new column: {column_name}")
+            except sqlite3.OperationalError as e:
+                if "duplicate column name" in str(e).lower():
+                    # Column already exists, which is fine
+                    pass
+                else:
+                    logging.warning(f"Could not add column {column_name}: {e}")
     
     def record_exists(self, region_code: str, timestamp: datetime) -> bool:
         """Check if weather record already exists for given region and timestamp."""
@@ -81,21 +118,26 @@ class WeatherDatabase:
                 INSERT INTO weather_data (
                     region_code, region_name, latitude, longitude, timestamp,
                     temperature, dewpoint, humidity, precipitation, pressure,
-                    wind_speed, wind_direction, created_at
-                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                    wind_speed, wind_direction, cloud_cover, snow_depth,
+                    wind_gust, sunshine_duration, created_at
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             ''', (
                 region_code,
                 region_name,
                 latitude,
                 longitude,
                 timestamp.isoformat(),
-                weather_row.get('temp'),
-                weather_row.get('dwpt'),
-                weather_row.get('rhum'),
-                weather_row.get('prcp'),
-                weather_row.get('pres'),
-                weather_row.get('wspd'),
-                weather_row.get('wdir'),
+                self._safe_get_value(weather_row, 'temp'),
+                self._safe_get_value(weather_row, 'dwpt'),
+                self._safe_get_value(weather_row, 'rhum'),
+                self._safe_get_value(weather_row, 'prcp'),
+                self._safe_get_value(weather_row, 'pres'),
+                self._safe_get_value(weather_row, 'wspd'),
+                self._safe_get_value(weather_row, 'wdir'),
+                self._safe_get_value(weather_row, 'coco'),
+                self._safe_get_value(weather_row, 'snow'),
+                self._safe_get_value(weather_row, 'wpgt'),
+                self._safe_get_value(weather_row, 'tsun'),
                 datetime.now().isoformat()
             ))
             conn.commit()

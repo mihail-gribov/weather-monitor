@@ -292,19 +292,44 @@ File content:
 
 Data is stored in the `weather_data` table with the following fields:
 
+### System Fields
 - `id` - Primary key (auto-increment)
 - `region_code` - Region identifier
 - `region_name` - Region display name
 - `latitude`, `longitude` - Geographic coordinates
 - `timestamp` - Observation time (ISO format)
-- `temperature` - Temperature (°C)
-- `dewpoint` - Dew point (°C)
-- `humidity` - Relative humidity (%)
-- `precipitation` - Precipitation (mm)
-- `pressure` - Atmospheric pressure (hPa)
-- `wind_speed` - Wind speed (km/h)
-- `wind_direction` - Wind direction (degrees)
 - `created_at` - Record creation timestamp
+
+### Weather Parameters
+
+#### ✅ Currently Monitored Parameters
+- `temperature` - Temperature (°C) ← from `temp`
+- `dewpoint` - Dew point (°C) ← from `dwpt`
+- `humidity` - Relative humidity (%) ← from `rhum`
+- `precipitation` - Precipitation (mm) ← from `prcp`
+- `pressure` - Atmospheric pressure (hPa) ← from `pres`
+- `wind_speed` - Wind speed (km/h) ← from `wspd`
+- `wind_direction` - Wind direction (degrees) ← from `wdir`
+- `cloud_cover` - Cloud cover (oktas 0-8) ← from `coco`
+- `snow_depth` - Snow depth (mm) ← from `snow`
+- `wind_gust` - Wind gusts (km/h) ← from `wpgt`
+- `sunshine_duration` - Sunshine duration (minutes) ← from `tsun`
+
+### Parameter Details
+
+| Database Field | Source API | Description | Units | Range/Notes |
+|---|---|---|---|---|
+| `temperature` | `temp` | Air temperature | °C | Celsius degrees |
+| `dewpoint` | `dwpt` | Dew point temperature | °C | Temperature at which air becomes saturated |
+| `humidity` | `rhum` | Relative humidity | % | 0-100% |
+| `precipitation` | `prcp` | Precipitation amount | mm | Millimeters of water equivalent |
+| `pressure` | `pres` | Atmospheric pressure | hPa | Hectopascals (millibars) |
+| `wind_speed` | `wspd` | Wind speed | km/h | Kilometers per hour |
+| `wind_direction` | `wdir` | Wind direction | degrees | 0-360°, where 0° = North |
+| `cloud_cover` | `coco` | Cloud coverage | oktas | 0-8 scale (0=clear, 8=overcast) |
+| `snow_depth` | `snow` | Snow depth | mm | Millimeters of snow on ground |
+| `wind_gust` | `wpgt` | Wind gust speed | km/h | Maximum wind speed in gusts |
+| `sunshine_duration` | `tsun` | Sunshine duration | minutes | Minutes of direct sunlight |
 
 ### Database Schema
 
@@ -323,6 +348,10 @@ CREATE TABLE weather_data (
     pressure REAL,
     wind_speed REAL,
     wind_direction REAL,
+    cloud_cover REAL,
+    snow_depth REAL,
+    wind_gust REAL,
+    sunshine_duration REAL,
     created_at TEXT NOT NULL,
     UNIQUE(region_code, timestamp)
 );
@@ -475,7 +504,7 @@ for row in cursor.fetchall():
 - **Multiple weather stations** - Support for 19+ weather stations in Moscow region
 - **International support** - Monitor weather stations worldwide
 - **Hourly data frequency** - Most stations provide hourly updates
-- **Complete weather parameters** - Temperature, humidity, pressure, wind, precipitation
+- **Complete weather parameters** - Temperature, humidity, pressure, wind, precipitation, cloud cover, snow depth, wind gusts, sunshine duration
 
 ### Automation Features
 
