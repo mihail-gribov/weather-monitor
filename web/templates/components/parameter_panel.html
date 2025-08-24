@@ -1,0 +1,187 @@
+<!-- Parameter Panel Component -->
+<div class="parameter-panel-component">
+    <!-- Header -->
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h6 class="mb-0">
+            <i class="fas fa-cogs me-2"></i>
+            Parameters
+        </h6>
+        <button type="button" class="btn btn-outline-primary btn-sm" id="reset-params-btn" title="Reset to Defaults">
+            <i class="fas fa-undo"></i>
+        </button>
+    </div>
+
+    <!-- Metric Selection -->
+    <div class="mb-3">
+        <label class="form-label">
+            <i class="fas fa-chart-line me-1"></i>
+            Metric
+        </label>
+        <div class="metric-selection">
+            <div class="row g-2">
+                <div class="col-6">
+                    <div class="form-check metric-option">
+                        <input class="form-check-input" type="radio" name="metric" id="metric-temp" value="temperature" checked>
+                        <label class="form-check-label" for="metric-temp">
+                            <i class="fas fa-thermometer-half text-primary"></i>
+                            <span>Temperature</span>
+                        </label>
+                    </div>
+                </div>
+                <div class="col-6">
+                    <div class="form-check metric-option">
+                        <input class="form-check-input" type="radio" name="metric" id="metric-humidity" value="humidity">
+                        <label class="form-check-label" for="metric-humidity">
+                            <i class="fas fa-tint text-info"></i>
+                            <span>Humidity</span>
+                        </label>
+                    </div>
+                </div>
+                <div class="col-6">
+                    <div class="form-check metric-option">
+                        <input class="form-check-input" type="radio" name="metric" id="metric-pressure" value="pressure">
+                        <label class="form-check-label" for="metric-pressure">
+                            <i class="fas fa-compress-alt text-warning"></i>
+                            <span>Pressure</span>
+                        </label>
+                    </div>
+                </div>
+                <div class="col-6">
+                    <div class="form-check metric-option">
+                        <input class="form-check-input" type="radio" name="metric" id="metric-wind" value="wind_speed">
+                        <label class="form-check-label" for="metric-wind">
+                            <i class="fas fa-wind text-success"></i>
+                            <span>Wind Speed</span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Time Range Selection -->
+    <div class="mb-3">
+        <label class="form-label">
+            <i class="fas fa-clock me-1"></i>
+            Time Range
+        </label>
+        
+        <!-- Quick Time Range Buttons -->
+        <div class="time-range-buttons mb-2">
+            <div class="btn-group btn-group-sm w-100" role="group">
+                <input type="radio" class="btn-check" name="time-range" id="time-1h" value="1">
+                <label class="btn btn-outline-secondary" for="time-1h">1h</label>
+                
+                <input type="radio" class="btn-check" name="time-range" id="time-6h" value="6">
+                <label class="btn btn-outline-secondary" for="time-6h">6h</label>
+                
+                <input type="radio" class="btn-check" name="time-range" id="time-24h" value="24" checked>
+                <label class="btn btn-outline-secondary" for="time-24h">24h</label>
+                
+                <input type="radio" class="btn-check" name="time-range" id="time-48h" value="48">
+                <label class="btn btn-outline-secondary" for="time-48h">48h</label>
+                
+                <input type="radio" class="btn-check" name="time-range" id="time-168h" value="168">
+                <label class="btn btn-outline-secondary" for="time-168h">1w</label>
+            </div>
+        </div>
+
+        <!-- Custom Date Range -->
+        <div class="custom-date-range">
+            <div class="form-check">
+                <input class="form-check-input" type="radio" name="time-range" id="time-custom" value="custom">
+                <label class="form-check-label" for="time-custom">
+                    Custom Range
+                </label>
+            </div>
+            
+            <div id="custom-date-inputs" class="mt-2" style="display: none;">
+                <div class="row g-2">
+                    <div class="col-6">
+                        <label class="form-label small">From</label>
+                        <input type="datetime-local" class="form-control form-control-sm" id="date-from">
+                    </div>
+                    <div class="col-6">
+                        <label class="form-label small">To</label>
+                        <input type="datetime-local" class="form-control form-control-sm" id="date-to">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Data Limit -->
+    <div class="mb-3">
+        <label for="data-limit" class="form-label">
+            <i class="fas fa-database me-1"></i>
+            Data Points Limit
+        </label>
+        <div class="input-group input-group-sm">
+            <input type="number" class="form-control" id="data-limit" value="1000" min="100" max="10000" step="100">
+            <span class="input-group-text">points</span>
+        </div>
+        <div class="form-text">Maximum number of data points to load</div>
+    </div>
+
+    <!-- Auto Refresh -->
+    <div class="mb-3">
+        <div class="form-check form-switch">
+            <input class="form-check-input" type="checkbox" id="auto-refresh">
+            <label class="form-check-label" for="auto-refresh">
+                <i class="fas fa-sync-alt me-1"></i>
+                Auto Refresh
+            </label>
+        </div>
+        
+        <div id="refresh-interval" class="mt-2" style="display: none;">
+            <div class="input-group input-group-sm">
+                <input type="number" class="form-control" id="refresh-seconds" value="30" min="10" max="300" step="10">
+                <span class="input-group-text">seconds</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Action Buttons -->
+    <div class="d-grid gap-2">
+        <button type="button" class="btn btn-primary" id="update-chart-btn">
+            <i class="fas fa-sync-alt me-1"></i>
+            Update Chart
+        </button>
+        <button type="button" class="btn btn-outline-secondary" id="export-data-btn">
+            <i class="fas fa-download me-1"></i>
+            Export Data
+        </button>
+    </div>
+
+    <!-- Status Indicators -->
+    <div class="mt-3">
+        <div class="d-flex justify-content-between align-items-center">
+            <small class="text-muted">
+                <i class="fas fa-info-circle me-1"></i>
+                <span id="param-status">Ready</span>
+            </small>
+            <small class="text-muted">
+                <i class="fas fa-clock me-1"></i>
+                <span id="last-update-time">-</span>
+            </small>
+        </div>
+    </div>
+</div>
+
+<!-- Parameter Preset Template (hidden) -->
+<template id="parameter-preset-template">
+    <div class="parameter-preset" data-preset-name="">
+        <div class="d-flex justify-content-between align-items-center">
+            <div>
+                <strong class="preset-name"></strong>
+                <small class="text-muted d-block preset-description"></small>
+            </div>
+            <button type="button" class="btn btn-outline-primary btn-sm load-preset-btn">
+                <i class="fas fa-arrow-right"></i>
+            </button>
+        </div>
+    </div>
+</template>
+
+
+

@@ -1,0 +1,153 @@
+{% extends "base.html" %}
+
+{% block title %}Weather Dashboard - Weather Monitor{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <!-- Control Panel -->
+        <div class="col-lg-3 col-md-4">
+            <!-- System Status -->
+            <div class="card mb-3">
+                <div class="card-header">
+                    <h6 class="card-title mb-0">
+                        <i class="fas fa-info-circle me-2"></i>
+                        System Status
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-6">
+                            <small class="text-muted">Database</small>
+                            <div id="db-status" class="text-success">
+                                <i class="fas fa-check-circle"></i> Connected
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <small class="text-muted">Regions</small>
+                            <div id="regions-count">-</div>
+                        </div>
+                    </div>
+                    <div class="row mt-2">
+                        <div class="col-6">
+                            <small class="text-muted">Records</small>
+                            <div id="records-count">-</div>
+                        </div>
+                        <div class="col-6">
+                            <small class="text-muted">Last Update</small>
+                            <div id="last-update-time">-</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Parameters -->
+            <div class="card mb-3">
+                <div class="card-header">
+                    <h6 class="card-title mb-0">
+                        <i class="fas fa-cogs me-2"></i>
+                        Parameters
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <label for="metric-select" class="form-label">Metric</label>
+                        <select class="form-select" id="metric-select">
+                            <option value="temperature">Temperature</option>
+                            <option value="humidity">Humidity</option>
+                            <option value="pressure">Pressure</option>
+                            <option value="wind_speed">Wind Speed</option>
+                            <option value="precipitation">Precipitation</option>
+                        </select>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="hours-select" class="form-label">Time Period</label>
+                        <select class="form-select" id="hours-select">
+                            <option value="6">Last 6 hours</option>
+                            <option value="12">Last 12 hours</option>
+                            <option value="24" selected>Last 24 hours</option>
+                            <option value="48">Last 48 hours</option>
+                            <option value="72">Last 72 hours</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" id="auto-refresh-toggle">
+                        <label class="form-check-label" for="auto-refresh-toggle">
+                            Auto refresh (30s)
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Region Selection -->
+            <div class="card mb-3">
+                <div class="card-header">
+                    <h6 class="card-title mb-0">
+                        <i class="fas fa-map-marker-alt me-2"></i>
+                        Region Selection
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <div id="region-list">
+                        <!-- Regions will be populated here -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Statistics -->
+            <div class="card">
+                <div class="card-header">
+                    <h6 class="card-title mb-0">
+                        <i class="fas fa-chart-bar me-2"></i>
+                        Statistics
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <div id="stats-container">
+                        <div class="text-center text-muted">
+                            <i class="fas fa-chart-bar fa-2x mb-2"></i>
+                            <p class="mb-0">Select regions to view statistics</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Dashboard Area -->
+        <div class="col-lg-9 col-md-8">
+            <!-- Loading Indicator -->
+            <div id="loading-indicator" class="text-center py-5" style="display: none;">
+                <div class="spinner-border text-primary" role="status">
+                    <span class="visually-hidden">Loading...</span>
+                </div>
+                <p class="mt-2">Loading weather data...</p>
+            </div>
+
+            <!-- Error Message -->
+            <div id="error-message" class="alert alert-danger" style="display: none;">
+                <i class="fas fa-exclamation-triangle me-2"></i>
+                <span id="error-text">An error occurred while loading data.</span>
+            </div>
+
+            <!-- Chart Container -->
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-chart-area me-2"></i>
+                        Interactive Weather Chart
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div id="chart-container" class="text-center text-muted">
+                        <i class="fas fa-chart-line fa-3x mb-3"></i>
+                        <h5>Weather Data Visualization</h5>
+                        <p>Select regions and parameters to view interactive charts</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

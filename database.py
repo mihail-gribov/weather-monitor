@@ -6,6 +6,19 @@ import math
 from datetime import datetime
 from typing import Optional, Dict, Any
 
+# Fix for Python 3.12+ datetime adapter deprecation warning
+def adapt_datetime(val):
+    """Adapt datetime to string for SQLite3."""
+    return val.isoformat()
+
+def convert_datetime(val):
+    """Convert string back to datetime from SQLite3."""
+    return datetime.fromisoformat(val.decode())
+
+# Register the adapters
+sqlite3.register_adapter(datetime, adapt_datetime)
+sqlite3.register_converter("datetime", convert_datetime)
+
 
 class WeatherDatabase:
     """Weather data database manager."""
@@ -24,7 +37,7 @@ class WeatherDatabase:
     
     def _init_database(self):
         """Create weather data table if it doesn't exist."""
-        conn = sqlite3.connect(self.db_path)
+        conn = sqlite3.connect(self.db_path, detect_types=sqlite3.PARSE_DECLTYPES)
         try:
             cursor = conn.cursor()
             cursor.execute('''
@@ -85,7 +98,7 @@ class WeatherDatabase:
     
     def record_exists(self, region_code: str, timestamp: datetime) -> bool:
         """Check if weather record already exists for given region and timestamp."""
-        conn = sqlite3.connect(self.db_path)
+        conn = sqlite3.connect(self.db_path, detect_types=sqlite3.PARSE_DECLTYPES)
         try:
             cursor = conn.cursor()
             cursor.execute(
@@ -111,7 +124,7 @@ class WeatherDatabase:
             logging.info(f"Weather data for {region_code} at {timestamp} already exists, skipping")
             return False
         
-        conn = sqlite3.connect(self.db_path)
+        conn = sqlite3.connect(self.db_path, detect_types=sqlite3.PARSE_DECLTYPES)
         try:
             cursor = conn.cursor()
             cursor.execute('''
@@ -154,7 +167,7 @@ class WeatherDatabase:
     
     def get_latest_record(self, region_code: str) -> Optional[Dict[str, Any]]:
         """Get the latest weather record for a region."""
-        conn = sqlite3.connect(self.db_path)
+        conn = sqlite3.connect(self.db_path, detect_types=sqlite3.PARSE_DECLTYPES)
         try:
             cursor = conn.cursor()
             cursor.execute('''

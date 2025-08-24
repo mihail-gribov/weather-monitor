@@ -1,108 +1,172 @@
 # Weather Monitor
 
-A weather monitoring system that periodically collects weather data from various regions and stores it in a SQLite database.
+A modern weather monitoring system that collects weather data from Serbian meteorological stations and provides both CLI and web-based interfaces for data visualization and analysis.
 
-## Table of Contents
+## 🌟 Features
 
-- [Installation](#installation)
-- [Usage](#usage)
-- [Configuration](#configuration)
-- [Data Export](#data-export)
-- [Cron Setup](#cron-setup)
-- [Database Structure](#database-structure)
-- [Supported Export Formats](#supported-export-formats)
-- [Troubleshooting](#troubleshooting)
-- [Monitoring](#monitoring)
-- [Features](#features)
+- **Real-time weather data collection** from 22 Serbian meteorological stations
+- **Modern web dashboard** with interactive charts and real-time updates
+- **CLI interface** for data collection, plotting, and export
+- **Multiple data formats** support (CSV, JSON, PNG charts)
+- **Automated data collection** via cron scheduling
+- **Responsive web design** with modern UI/UX
+- **Interactive charts** using Plotly.js
+- **RESTful API** for programmatic access
 
-## Installation
+## 📊 Supported Regions
 
-### Prerequisites
+The system currently monitors **22 Serbian weather stations**:
 
-- Python 3.7+ (recommended Python 3.8+)
-- pip for installing dependencies
-- Internet access for weather data retrieval
+### Major Cities
+- **Belgrade** (Београд) - Capital city
+- **Novi Sad** (Нови Сад) - Second largest city
+- **Niš** (Ниш) - Third largest city
+- **Kragujevac** (Крагујевац) - Industrial center
 
-### Setup
+### Regional Centers
+- **Subotica** (Суботица) - Northern Serbia
+- **Zrenjanin** (Зрењанин) - Vojvodina region
+- **Pančevo** (Панчево) - Industrial city
+- **Čačak** (Чачак) - Central Serbia
+- **Kraljevo** (Краљево) - Central Serbia
+- **Novi Pazar** (Нови Пазар) - Southwest Serbia
 
-1. **Install dependencies:**
+### Additional Stations
+- **Leskovac, Vranje, Požarevac, Smederevo, Šabac, Valjevo, Kikinda, Sremska Mitrovica, Bečej, Vrbas, Sremski Karlovci, Inđija**
+
+## 🚀 Quick Start
+
+### Installation
+
+1. **Clone the repository:**
+```bash
+git clone <repository-url>
+cd weather-monitor
+```
+
+2. **Install dependencies:**
 ```bash
 pip install -r requirements.txt
 ```
 
-2. **Configure regions in `config.yaml`**
-
-3. **Test the installation:**
+3. **Initialize the database:**
 ```bash
-python weather_monitor.py fetch-weather --verbose
+python weather_monitor.py fetch-weather
 ```
 
-## Usage
+4. **Start the web dashboard:**
+```bash
+python weather_monitor.py serve --host 0.0.0.0 --port 8080
+```
 
-### Basic Data Collection Commands
+5. **Open your browser:**
+Navigate to `http://localhost:8080/dashboard`
+
+## 📈 Usage
+
+### Web Dashboard
+
+The modern web interface provides:
+- **Interactive region selection** with checkboxes
+- **Real-time parameter selection** (temperature, humidity, pressure, wind speed, precipitation)
+- **Dynamic time range selection** (6, 12, 24, 48 hours)
+- **Interactive charts** with zoom, pan, and hover details
+- **Responsive design** that works on desktop and mobile
+- **Modern UI** with gradient accents and smooth animations
 
 ```bash
-# Collect data for the last 6 hours (recommended period)
+# Start web server
+python weather_monitor.py serve --host 0.0.0.0 --port 8080
+
+# Access dashboard
+# http://localhost:8080/dashboard
+```
+
+### CLI Commands
+
+#### Data Collection
+```bash
+# Collect weather data for all Serbian stations
 python weather_monitor.py fetch-weather
 
-# Collect data for the last 3 hours (for frequent runs)
-python weather_monitor.py fetch-weather --hours 3
+# Collect data for specific time period
+python weather_monitor.py fetch-weather --hours 24
 
-# Collect data for the last 12 hours (for infrequent runs)
-python weather_monitor.py fetch-weather --hours 12
-```
-
-### Additional Options
-
-```bash
-# Specify custom configuration file path
-python weather_monitor.py fetch-weather --config my_config.yaml
-
-# Enable verbose logging
+# Verbose output
 python weather_monitor.py fetch-weather --verbose
-
-# View latest data for a specific region
-python weather_monitor.py latest moscow
 ```
 
-### Available Commands
-
+#### Data Visualization
 ```bash
+# Create ASCII plot for temperature in Belgrade
+python weather_monitor.py plot temperature --regions belgrade --ascii
+
+# Save plot as PNG file
+python weather_monitor.py plot temperature --regions belgrade,novi_sad --save weather_plot.png
+
+# Create plot for multiple metrics
+python weather_monitor.py plot humidity --regions belgrade,nis,kragujevac --ascii
+
+# Custom time range
+python weather_monitor.py plot pressure --regions belgrade --hours 48 --ascii
+```
+
+#### Data Export
+```bash
+# Export data to CSV format
+python weather_monitor.py export weather_data.csv --format csv
+
+# Export data to JSON with pretty formatting
+python weather_monitor.py export weather_data.json --format json --pretty
+
+# Export data for specific region
+python weather_monitor.py export belgrade_data.csv --format csv --region belgrade
+
+# Export data with date range
+python weather_monitor.py export data.csv --format csv --start-date 2024-01-01 --end-date 2024-01-31
+```
+
+#### System Information
+```bash
+# View latest data for a specific region
+python weather_monitor.py latest belgrade
+
 # Show all available commands
 python weather_monitor.py --help
 
 # Get help for specific command
 python weather_monitor.py fetch-weather --help
-python weather_monitor.py export --help
 ```
 
-## Configuration
+## ⚙️ Configuration
 
-The `config.yaml` file contains region and database settings:
+### Database Settings
+The system uses SQLite database (`weather_data.db`) for data storage.
+
+### Region Configuration
+Regions are configured in `config.yaml`:
 
 ```yaml
 # Weather monitoring configuration
 regions:
-  # Active weather stations in Moscow region (with current data)
-  moskva_station:
-    name: "Moskva Station"
-    latitude: 55.833
-    longitude: 37.617
-  ostafyevo:
-    name: "Ostafyevo / Yazovo"
-    latitude: 55.512
-    longitude: 37.507
-  # ... more regions
-  
-  # International stations
   belgrade:
     name: "Belgrade"
     latitude: 44.79
     longitude: 20.45
+  novi_sad:
+    name: "Novi Sad"
+    latitude: 45.25
+    longitude: 19.85
+  # ... more Serbian stations
 
 # Database settings
 database:
   path: "weather_data.db"
+
+# Plotting configuration
+plotting:
+  default_colors: ['#1f77b4', '#ff7f0e', '#2ca02c', '#d62728', '#9467bd']
+  ascii_symbols: ['─', '┄', '┅', '┈', '┉']
 ```
 
 ### Adding New Regions
@@ -110,449 +174,186 @@ database:
 To add a new region, add an entry to the `regions` section:
 
 ```yaml
-your_city:
-  name: "Your City Name"
-  latitude: XX.XX
-  longitude: YY.YY
+new_region:
+  name: "Region Name"
+  latitude: 44.123
+  longitude: 20.456
 ```
 
-## Data Export
+## 🔧 Automation
 
-The system supports exporting data to multiple formats with flexible filtering options.
+### Cron Setup
 
-### Export Formats
-
-```bash
-# Export all data to CSV (default)
-python weather_monitor.py export weather_data.csv
-
-# Export to JSON with pretty formatting
-python weather_monitor.py export weather_data.json --format json --pretty
-
-# Export to XML
-python weather_monitor.py export weather_data.xml --format xml
-
-# Export to TSV (tab-separated values)
-python weather_monitor.py export weather_data.tsv --format tsv
-
-# Export to plain text format
-python weather_monitor.py export weather_data.txt --format txt
-
-# Export to SQL INSERT statements
-python weather_monitor.py export weather_data.sql --format sql
-```
-
-### Data Filtering
+For automated data collection, set up a cron job:
 
 ```bash
-# Export data for specific region only
-python weather_monitor.py export moscow_data.csv --region moscow
-
-# Export last 10 records
-python weather_monitor.py export recent_data.json --format json --limit 10
-
-# Export data for specific date range
-python weather_monitor.py export period_data.csv --start-date "2025-08-23" --end-date "2025-08-24"
-
-# Combine multiple filters
-python weather_monitor.py export filtered_data.json --format json --region spb --limit 5 --pretty
-```
-
-## Cron Setup
-
-### 🚀 Quick Setup
-
-For automated data collection, use the provided setup script:
-
-```bash
-# Run the automatic setup script
+# Run setup script
 ./setup_cron.sh
+
+# Or manually add to crontab
+crontab -e
+
+# Add line for every 6 hours
+0 */6 * * * /path/to/weather-monitor/run_weather_monitor.sh
 ```
 
-This script will:
-- Auto-detect your Python environment
-- Create a wrapper script with correct paths
-- Test the configuration
-- Offer interactive cron setup
+### Manual Cron Setup
 
-### Manual Cron Configuration
-
-#### 1. Prepare the Wrapper Script
-
-The wrapper script `run_weather_monitor.sh` ensures proper environment setup for cron execution.
-
-**Important:** Check and adjust paths in `run_weather_monitor.sh` if needed:
-
-```bash
-# Edit the wrapper script
-nano run_weather_monitor.sh
-
-# Verify these lines:
-PROJECT_DIR="/path/to/your/weather-monitor"  # Project path
-PYTHON_PATH="/path/to/your/python"           # Python path
-```
-
-#### 2. Test the Wrapper Script
-
-```bash
-# Make script executable
-chmod +x run_weather_monitor.sh
-
-# Test execution
-./run_weather_monitor.sh 1
-
-# Check logs
-cat logs/weather_monitor_cron.log
-```
-
-#### 3. Configure Cron
-
-Open crontab editor:
+1. **Edit crontab:**
 ```bash
 crontab -e
 ```
 
-Add one of the recommended schedules:
-
-**🎯 OPTIMAL SETUP (recommended):**
+2. **Add entry:**
 ```bash
-# Every 30 minutes with 6-hour data window
-*/30 * * * * /path/to/weather-monitor/run_weather_monitor.sh 6
+# Collect weather data every 6 hours
+0 */6 * * * /path/to/weather-monitor/run_weather_monitor.sh
 ```
 
-**⚡ HIGH FREQUENCY:**
-```bash
-# Every 15 minutes with 3-hour data window
-*/15 * * * * /path/to/weather-monitor/run_weather_monitor.sh 3
-```
+## 📊 Data Structure
 
-**💾 RESOURCE SAVING:**
-```bash
-# Every hour with 12-hour data window
-0 * * * * /path/to/weather-monitor/run_weather_monitor.sh 12
-```
-
-#### 4. Verify Cron Setup
-
-```bash
-# Check cron service status
-sudo systemctl status cron
-
-# View active cron jobs
-crontab -l
-
-# Monitor logs
-tail -f logs/weather_monitor_cron.log
-```
-
-### Advanced Cron Configuration
-
-#### Email Notifications
-
-```bash
-# Add to the beginning of crontab for email notifications
-MAILTO=your-email@example.com
-
-# Your cron jobs
-*/30 * * * * /path/to/weather-monitor/run_weather_monitor.sh 6
-```
-
-#### Log Rotation
-
-Create `/etc/logrotate.d/weather-monitor`:
-
-```bash
-sudo nano /etc/logrotate.d/weather-monitor
-```
-
-File content:
-```
-/path/to/weather-monitor/logs/*.log {
-    daily
-    rotate 30
-    compress
-    delaycompress
-    missingok
-    notifempty
-    create 644 user user
-}
-```
-
-#### Business Hours Only
-
-```bash
-# Only run from 8:00 to 22:00 on weekdays
-*/30 8-22 * * 1-5 /path/to/weather-monitor/run_weather_monitor.sh 6
-
-# Less frequent on weekends (every 2 hours)
-0 */2 * * 6,7 /path/to/weather-monitor/run_weather_monitor.sh 6
-```
-
-## Database Structure
-
-Data is stored in the `weather_data` table with the following fields:
-
-### System Fields
-- `id` - Primary key (auto-increment)
-- `region_code` - Region identifier
-- `region_name` - Region display name
-- `latitude`, `longitude` - Geographic coordinates
-- `timestamp` - Observation time (ISO format)
-- `created_at` - Record creation timestamp
-
-### Weather Parameters
-
-#### ✅ Currently Monitored Parameters
-- `temperature` - Temperature (°C) ← from `temp`
-- `dewpoint` - Dew point (°C) ← from `dwpt`
-- `humidity` - Relative humidity (%) ← from `rhum`
-- `precipitation` - Precipitation (mm) ← from `prcp`
-- `pressure` - Atmospheric pressure (hPa) ← from `pres`
-- `wind_speed` - Wind speed (km/h) ← from `wspd`
-- `wind_direction` - Wind direction (degrees) ← from `wdir`
-- `cloud_cover` - Cloud cover (oktas 0-8) ← from `coco`
-- `snow_depth` - Snow depth (mm) ← from `snow`
-- `wind_gust` - Wind gusts (km/h) ← from `wpgt`
-- `sunshine_duration` - Sunshine duration (minutes) ← from `tsun`
-
-### Parameter Details
-
-| Database Field | Source API | Description | Units | Range/Notes |
-|---|---|---|---|---|
-| `temperature` | `temp` | Air temperature | °C | Celsius degrees |
-| `dewpoint` | `dwpt` | Dew point temperature | °C | Temperature at which air becomes saturated |
-| `humidity` | `rhum` | Relative humidity | % | 0-100% |
-| `precipitation` | `prcp` | Precipitation amount | mm | Millimeters of water equivalent |
-| `pressure` | `pres` | Atmospheric pressure | hPa | Hectopascals (millibars) |
-| `wind_speed` | `wspd` | Wind speed | km/h | Kilometers per hour |
-| `wind_direction` | `wdir` | Wind direction | degrees | 0-360°, where 0° = North |
-| `cloud_cover` | `coco` | Cloud coverage | oktas | 0-8 scale (0=clear, 8=overcast) |
-| `snow_depth` | `snow` | Snow depth | mm | Millimeters of snow on ground |
-| `wind_gust` | `wpgt` | Wind gust speed | km/h | Maximum wind speed in gusts |
-| `sunshine_duration` | `tsun` | Sunshine duration | minutes | Minutes of direct sunlight |
+### Weather Metrics
+- **Temperature** (°C)
+- **Humidity** (%)
+- **Pressure** (hPa)
+- **Wind Speed** (m/s)
+- **Precipitation** (mm)
 
 ### Database Schema
-
 ```sql
 CREATE TABLE weather_data (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     region_code TEXT NOT NULL,
-    region_name TEXT NOT NULL,
-    latitude REAL NOT NULL,
-    longitude REAL NOT NULL,
-    timestamp TEXT NOT NULL,
+    timestamp DATETIME NOT NULL,
     temperature REAL,
-    dewpoint REAL,
     humidity REAL,
-    precipitation REAL,
     pressure REAL,
     wind_speed REAL,
-    wind_direction REAL,
-    cloud_cover REAL,
-    snow_depth REAL,
-    wind_gust REAL,
-    sunshine_duration REAL,
-    created_at TEXT NOT NULL,
-    UNIQUE(region_code, timestamp)
+    precipitation REAL,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP
 );
 ```
 
-## Supported Export Formats
+## 🌐 API Endpoints
 
-- **CSV** - Comma-separated values (default)
-- **TSV** - Tab-separated values
-- **JSON** - JavaScript Object Notation with pretty formatting option
-- **XML** - Structured XML with metadata
-- **TXT** - Plain text format with delimiters
-- **SQL** - INSERT statements for importing to other databases
+The web server provides RESTful API endpoints:
 
-## Troubleshooting
+- `GET /api/health` - System health status
+- `GET /api/regions` - List all available regions
+- `GET /api/weather-data` - Get weather data with filters
+  - Parameters: `regions`, `metric`, `hours`, `limit`
+
+### Example API Usage
+```bash
+# Get temperature data for Belgrade
+curl "http://localhost:8080/api/weather-data?regions=belgrade&metric=temperature&hours=24"
+
+# Get humidity data for multiple regions
+curl "http://localhost:8080/api/weather-data?regions=belgrade,novi_sad&metric=humidity&hours=48"
+```
+
+## 🎨 Web Interface Features
+
+### Modern Design
+- **Light theme** with gradient accents
+- **Responsive layout** for all screen sizes
+- **Interactive elements** with hover effects
+- **Smooth animations** and transitions
+- **Professional typography** using Inter font
+
+### Interactive Charts
+- **Real-time updates** without page refresh
+- **Zoom and pan** functionality
+- **Hover tooltips** with detailed information
+- **Multiple line support** for comparing regions
+- **Export capabilities** (PNG, SVG)
+
+### User Experience
+- **Intuitive region selection** with checkboxes
+- **Quick parameter switching** (temperature, humidity, etc.)
+- **Flexible time range selection**
+- **Loading indicators** and error handling
+- **Mobile-friendly** interface
+
+## 🔍 Monitoring and Logs
+
+### Log Files
+- `logs/weather_monitor.log` - Main application logs
+- `logs/cron.log` - Cron job execution logs
+
+### Health Monitoring
+```bash
+# Check system health via API
+curl http://localhost:8080/api/health
+
+# View latest logs
+tail -f logs/weather_monitor.log
+```
+
+## 🛠️ Troubleshooting
 
 ### Common Issues
 
-#### Issue: Cron doesn't start
-
-**Check:**
-1. Cron service status: `sudo systemctl status cron`
-2. Crontab syntax: `crontab -l`
-3. Script permissions: `ls -la run_weather_monitor.sh`
-
-**Solution:**
+1. **Database not found:**
 ```bash
-# Restart cron service
-sudo systemctl restart cron
-
-# Check system logs
-sudo journalctl -u cron -f
+python weather_monitor.py fetch-weather
 ```
 
-#### Issue: Script can't find Python
-
-**Check Python path:**
+2. **Port already in use:**
 ```bash
-which python
-# Update PYTHON_PATH in run_weather_monitor.sh
+python weather_monitor.py serve --port 8081
 ```
 
-#### Issue: No permission to write logs
-
-**Create log directory:**
+3. **Permission denied:**
 ```bash
-mkdir -p /path/to/weather-monitor/logs
-chmod 755 /path/to/weather-monitor/logs
+chmod +x run_weather_monitor.sh
 ```
 
-#### Issue: Environment variables not loaded
-
-**Add to wrapper script:**
+### Debug Mode
 ```bash
-# Load user profile
-source ~/.bashrc
-source ~/.profile
+# Enable debug logging
+python weather_monitor.py fetch-weather --verbose
+
+# Start server in debug mode
+python weather_monitor.py serve --debug
 ```
 
-### Debug Commands
+## 📋 Requirements
 
-```bash
-# Test weather data collection
-python weather_monitor.py fetch-weather --hours 1 --verbose
+### System Requirements
+- **Python:** 3.7+ (recommended 3.8+)
+- **SQLite:** Built-in with Python
+- **Internet:** Required for weather data retrieval
 
-# Check database records
-python -c "import sqlite3; conn=sqlite3.connect('weather_data.db'); print('Records:', conn.execute('SELECT COUNT(*) FROM weather_data').fetchone()[0])"
+### Python Dependencies
+- **matplotlib>=3.5.0** - Data visualization
+- **plotext>=5.0.0** - ASCII charts
+- **rich>=12.0.0** - Terminal output
+- **flask>=2.0.0** - Web server
+- **plotly>=5.0.0** - Interactive charts
+- **jinja2>=3.0.0** - Templates
+- **requests>=2.25.0** - HTTP requests
+- **click>=8.0.0** - CLI framework
 
-# View recent logs
-tail -20 logs/weather_monitor_cron.log
+## 📄 License
 
-# Test export functionality
-python weather_monitor.py export test.csv --limit 5
-```
+This project is licensed under the MIT License - see the LICENSE file for details.
 
-## Monitoring
+## 🤝 Contributing
 
-### Status Checking
+1. Fork the repository
+2. Create a feature branch
+3. Make your changes
+4. Add tests if applicable
+5. Submit a pull request
 
-Create a simple status checker:
+## 📞 Support
 
-```bash
-cat > check_status.sh << 'EOF'
-#!/bin/bash
-echo "=== Weather Monitor Status ==="
-echo "Last cron run: $(tail -1 logs/weather_monitor_cron.log | head -c 19 2>/dev/null || echo "No log")"
-echo "Database records: $(python -c "import sqlite3; conn=sqlite3.connect('weather_data.db'); print(conn.execute('SELECT COUNT(*) FROM weather_data').fetchone()[0])" 2>/dev/null || echo "Error")"
-echo "Log file size: $(du -h logs/weather_monitor_cron.log 2>/dev/null | cut -f1 || echo "No log")"
-echo "Active regions: $(python -c "import sqlite3; conn=sqlite3.connect('weather_data.db'); print(conn.execute('SELECT COUNT(DISTINCT region_code) FROM weather_data').fetchone()[0])" 2>/dev/null || echo "Error")"
-EOF
+For issues and questions:
+1. Check the troubleshooting section
+2. Review the logs in `logs/` directory
+3. Create an issue on GitHub
 
-chmod +x check_status.sh
-./check_status.sh
-```
+---
 
-### Log Monitoring
-
-```bash
-# Real-time log monitoring
-tail -f logs/weather_monitor_cron.log
-
-# System cron logs
-sudo tail -f /var/log/syslog | grep CRON
-
-# Check for errors in logs
-grep -i error logs/weather_monitor_cron.log
-```
-
-### Performance Monitoring
-
-```bash
-# Database size
-du -h weather_data.db
-
-# Records per region
-python -c "
-import sqlite3
-conn = sqlite3.connect('weather_data.db')
-cursor = conn.cursor()
-cursor.execute('SELECT region_name, COUNT(*) as count FROM weather_data GROUP BY region_name ORDER BY count DESC')
-for row in cursor.fetchall():
-    print(f'{row[0]}: {row[1]} records')
-"
-
-# Latest data timestamps
-python -c "
-import sqlite3
-conn = sqlite3.connect('weather_data.db')
-cursor = conn.cursor()
-cursor.execute('SELECT region_name, MAX(timestamp) as latest FROM weather_data GROUP BY region_name ORDER BY latest DESC')
-for row in cursor.fetchall():
-    print(f'{row[0]}: {row[1]}')
-"
-```
-
-## Features
-
-### Core Features
-
-- **Automatic duplicate prevention** - Checks existing records before saving
-- **Network error resilience** - Handles temporary network issues gracefully
-- **Comprehensive logging** - Detailed operation logs for monitoring
-- **Flexible region configuration** - Easy to add/remove monitoring locations
-- **Multiple export formats** - Export data in 6 different formats
-- **Advanced filtering** - Filter exports by region, date range, and record count
-
-### Data Collection Features
-
-- **Configurable time windows** - Collect data for 1-24 hour periods
-- **Multiple weather stations** - Support for 19+ weather stations in Moscow region
-- **International support** - Monitor weather stations worldwide
-- **Hourly data frequency** - Most stations provide hourly updates
-- **Complete weather parameters** - Temperature, humidity, pressure, wind, precipitation, cloud cover, snow depth, wind gusts, sunshine duration
-
-### Automation Features
-
-- **Cron integration** - Automated data collection via cron jobs
-- **Environment detection** - Automatic Python and path detection
-- **Wrapper scripts** - Proper environment setup for cron execution
-- **Error handling** - Comprehensive error logging and recovery
-- **Status monitoring** - Built-in tools for system health checking
-
-### Export and Analysis Features
-
-- **Six export formats** - CSV, TSV, JSON, XML, TXT, SQL
-- **Flexible filtering** - By region, date range, record limit
-- **Pretty formatting** - Human-readable JSON and XML output
-- **SQL compatibility** - Generate INSERT statements for database migration
-- **Batch processing** - Export thousands of records efficiently
-
-## Final Setup Verification
-
-After installation and configuration:
-
-```bash
-# 1. Verify crontab
-crontab -l
-
-# 2. Test wrapper script
-./run_weather_monitor.sh 1
-
-# 3. Check system status
-./check_status.sh
-
-# 4. Monitor first automatic run
-tail -f logs/weather_monitor_cron.log
-```
-
-## Recommended Production Setup
-
-```bash
-# Add to crontab (crontab -e):
-SHELL=/bin/bash
-PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
-MAILTO=""
-
-# Optimal schedule: every 30 minutes with 6-hour window
-*/30 * * * * /path/to/weather-monitor/run_weather_monitor.sh 6
-
-# Weekly cleanup of old exports (optional)
-0 2 * * 0 find /path/to/weather-monitor -name "*.csv" -o -name "*.json" -o -name "*.xml" -mtime +7 -delete
-```
-
-Your weather monitor is now ready to automatically collect weather data every 30 minutes!
+**Weather Monitor** - Modern weather monitoring for Serbia 🇷🇸

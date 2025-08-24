@@ -1,0 +1,124 @@
+<!-- Region Selector Component -->
+<div class="region-selector-component">
+    <!-- Header -->
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h6 class="mb-0">
+            <i class="fas fa-map-marker-alt me-2"></i>
+            Regions
+        </h6>
+        <div class="btn-group btn-group-sm" role="group">
+            <button type="button" class="btn btn-outline-primary btn-sm" id="select-all-btn" title="Select All">
+                <i class="fas fa-check-double"></i>
+            </button>
+            <button type="button" class="btn btn-outline-secondary btn-sm" id="deselect-all-btn" title="Deselect All">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+    </div>
+
+    <!-- Search Box -->
+    <div class="mb-3">
+        <div class="input-group input-group-sm">
+            <span class="input-group-text">
+                <i class="fas fa-search"></i>
+            </span>
+            <input type="text" class="form-control" id="region-search" placeholder="Search regions...">
+            <button class="btn btn-outline-secondary" type="button" id="clear-search-btn" title="Clear Search">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+    </div>
+
+    <!-- Presets Dropdown -->
+    <div class="mb-3">
+        <div class="input-group input-group-sm">
+            <span class="input-group-text">
+                <i class="fas fa-bookmark"></i>
+            </span>
+            <select class="form-select" id="preset-select">
+                <option value="">Custom Selection</option>
+                <option value="major-cities">Major Cities</option>
+                <option value="moscow-region">Moscow Region</option>
+                <option value="international">International</option>
+            </select>
+        </div>
+    </div>
+
+    <!-- Region List Container -->
+    <div class="region-list-container">
+        <div class="region-list-header d-flex justify-content-between align-items-center mb-2">
+            <small class="text-muted">
+                <span id="selected-count">0</span> of <span id="total-count">0</span> selected
+            </small>
+            <small class="text-muted">
+                <span id="filtered-count">0</span> shown
+            </small>
+        </div>
+
+        <!-- Loading Indicator -->
+        <div id="regions-loading" class="text-center py-3" style="display: none;">
+            <div class="spinner-border spinner-border-sm text-primary" role="status">
+                <span class="visually-hidden">Loading...</span>
+            </div>
+            <small class="text-muted ms-2">Loading regions...</small>
+        </div>
+
+        <!-- Error Message -->
+        <div id="regions-error" class="alert alert-danger alert-sm" style="display: none;">
+            <i class="fas fa-exclamation-triangle me-1"></i>
+            <span id="regions-error-text">Failed to load regions</span>
+        </div>
+
+        <!-- Region Checkbox List -->
+        <div id="region-checkbox-list" class="region-checkbox-list">
+            <!-- Regions will be populated here -->
+        </div>
+
+        <!-- No Results Message -->
+        <div id="no-results" class="text-center text-muted py-3" style="display: none;">
+            <i class="fas fa-search fa-2x mb-2"></i>
+            <p class="mb-0">No regions found matching your search</p>
+        </div>
+    </div>
+
+    <!-- Selected Regions Summary -->
+    <div id="selected-summary" class="mt-3" style="display: none;">
+        <div class="card card-sm">
+            <div class="card-header py-2">
+                <h6 class="card-title mb-0">
+                    <i class="fas fa-list me-1"></i>
+                    Selected Regions
+                </h6>
+            </div>
+            <div class="card-body py-2">
+                <div id="selected-regions-list" class="selected-regions-list">
+                    <!-- Selected regions will be shown here -->
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Region Item Template (hidden) -->
+<template id="region-item-template">
+    <div class="region-item" data-region-code="">
+        <div class="form-check">
+            <input class="form-check-input" type="checkbox" id="">
+            <label class="form-check-label" for="">
+                <span class="region-name"></span>
+                <small class="text-muted d-block region-details"></small>
+            </label>
+        </div>
+    </div>
+</template>
+
+<!-- Selected Region Badge Template (hidden) -->
+<template id="selected-region-badge-template">
+    <span class="badge bg-primary me-1 mb-1 selected-region-badge" data-region-code="">
+        <span class="region-name"></span>
+        <button type="button" class="btn-close btn-close-white ms-1" aria-label="Remove"></button>
+    </span>
+</template>
+
+
+

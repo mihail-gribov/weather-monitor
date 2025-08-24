@@ -1,4 +1,5 @@
 .tickets/
+.propmpts/
 
 # Python
 __pycache__/
@@ -40,6 +41,16 @@ logs/
 !requirements.txt
 !README.md
 !crontab.example
+
+# Weather Monitor - Generated charts and plots
+*.png
+*.jpg
+*.jpeg
+*.svg
+*.pdf
+*.gif
+charts/
+plots/
 
 # Weather Monitor - Configuration files with sensitive data
 config_local.yaml
