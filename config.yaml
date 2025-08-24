@@ -1,124 +1,167 @@
-# Weather monitoring configuration
+database:
+  path: weather_data.db
+plotting:
+  ascii_symbols:
+  - ─
+  - ┄
+  - ┅
+  - ┈
+  - ┉
+  default_colors:
+  - '#1f77b4'
+  - '#ff7f0e'
+  - '#2ca02c'
+  - '#d62728'
+  - '#9467bd'
+  dpi: 100
+  figure_size:
+  - 10
+  - 6
+region_colors:
+  becej: '#e377c2'
+  belgrade: '#1f77b4'
+  cackak: '#7f7f7f'
+  indjija: '#17becf'
+  kikinda: '#9467bd'
+  kragujevac: '#d62728'
+  kraljevo: '#bcbd22'
+  leskovac: '#a6cee3'
+  new_region: '#ccc03d'
+  nis: '#2ca02c'
+  novi_pazar: '#17becf'
+  novi_sad: '#ff7f0e'
+  panchevo: '#e377c2'
+  pozarevac: '#fdbf6f'
+  sabac: '#ff9896'
+  smederevo: '#cab2d6'
+  sremska_mitrovica: '#8c564b'
+  sremski_karlovci: '#bcbd22'
+  subotica: '#9467bd'
+  test_region: '#7dcc3d'
+  valjevo: '#d62728'
+  vranje: '#fb9a99'
+  vrbas: '#7f7f7f'
+  zrenjanin: '#8c564b'
+region_presets:
+  central-serbia:
+  - kragujevac
+  - cackak
+  - kraljevo
+  - pozarevac
+  - smederevo
+  major-cities:
+  - belgrade
+  - novi_sad
+  - nis
+  - kragujevac
+  northern-serbia:
+  - belgrade
+  - novi_sad
+  - subotica
+  - zrenjanin
+  - panchevo
+  southern-serbia:
+  - nis
+  - leskovac
+  - vranje
+  - novi_pazar
 regions:
-  # Serbian weather stations
-  belgrade:
-    name: "Belgrade"
-    latitude: 44.79
-    longitude: 20.45
-  novi_sad:
-    name: "Novi Sad"
-    latitude: 45.25
-    longitude: 19.85
-  nis:
-    name: "Niš"
-    latitude: 43.32
-    longitude: 21.90
-  kragujevac:
-    name: "Kragujevac"
-    latitude: 44.02
-    longitude: 20.92
-  subotica:
-    name: "Subotica"
-    latitude: 46.10
-    longitude: 19.67
-  zrenjanin:
-    name: "Zrenjanin"
-    latitude: 45.38
-    longitude: 20.38
-  panchevo:
-    name: "Pančevo"
-    latitude: 44.87
-    longitude: 20.64
-  cackak:
-    name: "Čačak"
-    latitude: 43.89
-    longitude: 20.35
-  kraljevo:
-    name: "Kraljevo"
-    latitude: 43.73
-    longitude: 20.69
-  novi_pazar:
-    name: "Novi Pazar"
-    latitude: 43.14
-    longitude: 20.52
-  leskovac:
-    name: "Leskovac"
-    latitude: 42.99
-    longitude: 21.95
-  vranje:
-    name: "Vranje"
-    latitude: 42.55
-    longitude: 21.90
-  pozarevac:
-    name: "Požarevac"
-    latitude: 44.62
-    longitude: 21.19
-  smederevo:
-    name: "Smederevo"
-    latitude: 44.66
-    longitude: 20.93
-  sabac:
-    name: "Šabac"
-    latitude: 44.75
-    longitude: 19.69
-  valjevo:
-    name: "Valjevo"
-    latitude: 44.27
-    longitude: 19.89
-  kikinda:
-    name: "Kikinda"
-    latitude: 45.83
-    longitude: 20.47
-  sremska_mitrovica:
-    name: "Sremska Mitrovica"
-    latitude: 44.98
-    longitude: 19.61
   becej:
-    name: "Bečej"
     latitude: 45.62
     longitude: 20.04
-  vrbas:
-    name: "Vrbas"
-    latitude: 45.57
-    longitude: 19.65
-  sremski_karlovci:
-    name: "Sremski Karlovci"
-    latitude: 45.20
-    longitude: 19.94
+    name: Bečej
+  belgrade:
+    latitude: 44.79
+    longitude: 20.45
+    name: Belgrade
+  cackak:
+    latitude: 43.89
+    longitude: 20.35
+    name: Čačak
   indjija:
-    name: "Inđija"
     latitude: 45.05
     longitude: 20.08
-
-# Database settings
-database:
-  path: "weather_data.db"
-
-# Plotting configuration
-plotting:
-  default_colors: ['#1f77b4', '#ff7f0e', '#2ca02c', '#d62728', '#9467bd']
-  ascii_symbols: ['─', '┄', '┅', '┈', '┉']
-  figure_size: [10, 6]
-  dpi: 100
-
-# Web server configuration
-web_server:
-  default_port: 8080
-  default_host: "localhost"
-  auto_refresh_interval: 300
-  max_data_points: 1000
-  enable_cors: true
-
-# Region presets for quick selection
-region_presets:
-  major-cities: [belgrade, novi_sad, nis, kragujevac]
-  northern-serbia: [belgrade, novi_sad, subotica, zrenjanin, panchevo]
-  southern-serbia: [nis, leskovac, vranje, novi_pazar]
-  central-serbia: [kragujevac, cackak, kraljevo, pozarevac, smederevo]
-
-# Web interface configuration
+    name: Inđija
+  kikinda:
+    latitude: 45.83
+    longitude: 20.47
+    name: Kikinda
+  kragujevac:
+    latitude: 44.02
+    longitude: 20.92
+    name: Kragujevac
+  kraljevo:
+    latitude: 43.73
+    longitude: 20.69
+    name: Kraljevo
+  leskovac:
+    latitude: 42.99
+    longitude: 21.95
+    name: Leskovac
+  nis:
+    latitude: 43.32
+    longitude: 21.9
+    name: Niš
+  novi_pazar:
+    latitude: 43.14
+    longitude: 20.52
+    name: Novi Pazar
+  novi_sad:
+    latitude: 45.25
+    longitude: 19.85
+    name: Novi Sad
+  panchevo:
+    latitude: 44.87
+    longitude: 20.64
+    name: Pančevo
+  pozarevac:
+    latitude: 44.62
+    longitude: 21.19
+    name: Požarevac
+  sabac:
+    latitude: 44.75
+    longitude: 19.69
+    name: Šabac
+  smederevo:
+    latitude: 44.66
+    longitude: 20.93
+    name: Smederevo
+  sremska_mitrovica:
+    latitude: 44.98
+    longitude: 19.61
+    name: Sremska Mitrovica
+  sremski_karlovci:
+    latitude: 45.2
+    longitude: 19.94
+    name: Sremski Karlovci
+  subotica:
+    latitude: 46.1
+    longitude: 19.67
+    name: Subotica
+  valjevo:
+    latitude: 44.27
+    longitude: 19.89
+    name: Valjevo
+  vranje:
+    latitude: 42.55
+    longitude: 21.9
+    name: Vranje
+  vrbas:
+    latitude: 45.57
+    longitude: 19.65
+    name: Vrbas
+  zrenjanin:
+    latitude: 45.38
+    longitude: 20.38
+    name: Zrenjanin
 web_interface:
-  theme: "light"
-  default_chart_type: "line"
-  show_grid: true
   animation_duration: 500
+  default_chart_type: line
+  show_grid: true
+  theme: light
+web_server:
+  auto_refresh_interval: 300
+  default_host: localhost
+  default_port: 8080
+  enable_cors: true
+  max_data_points: 1000

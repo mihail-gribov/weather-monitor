@@ -167,6 +167,8 @@ database:
 plotting:
   default_colors: ['#1f77b4', '#ff7f0e', '#2ca02c', '#d62728', '#9467bd']
   ascii_symbols: ['─', '┄', '┅', '┈', '┉']
+
+
 ```
 
 ### Adding New Regions
@@ -240,6 +242,7 @@ The web server provides RESTful API endpoints:
 
 - `GET /api/health` - System health status
 - `GET /api/regions` - List all available regions
+
 - `GET /api/weather-data` - Get weather data with filters
   - Parameters: `regions`, `metric`, `hours`, `limit`
 
@@ -250,6 +253,8 @@ curl "http://localhost:8080/api/weather-data?regions=belgrade&metric=temperature
 
 # Get humidity data for multiple regions
 curl "http://localhost:8080/api/weather-data?regions=belgrade,novi_sad&metric=humidity&hours=48"
+
+
 ```
 
 ## 🎨 Web Interface Features
@@ -260,6 +265,13 @@ curl "http://localhost:8080/api/weather-data?regions=belgrade,novi_sad&metric=hu
 - **Interactive elements** with hover effects
 - **Smooth animations** and transitions
 - **Professional typography** using Inter font
+
+### Stable Color System
+- **Consistent region colors** that remain unchanged regardless of selection order
+- **Maximum color separation** using golden angle (137.508°) for distinct visualization
+- **Index-based color generation** ensures adjacent regions have maximally different colors
+- **Local color generation** without API requests for optimal performance
+- **Deterministic colors** - same region index always gets same color
 
 ### Interactive Charts
 - **Real-time updates** without page refresh

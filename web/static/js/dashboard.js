@@ -82,6 +82,26 @@ class WeatherDashboard {
     }
 
     /**
+     * Generate stable color for a region based on its index in the regions array
+     */
+    getRegionColor(regionCode) {
+        // Find index of region in current regions array
+        const regionIndex = this.currentRegions.indexOf(regionCode);
+        
+        if (regionIndex === -1) {
+            // If region not found, add it to the array
+            this.currentRegions.push(regionCode);
+            return this.getRegionColor(regionCode); // Recursive call with new index
+        }
+        
+        // Use golden angle to generate distinct colors
+        const goldenAngle = 137.508; // Degrees for maximum color separation
+        const hue = (regionIndex * goldenAngle) % 360;
+        
+        return `hsl(${hue}, 70%, 60%)`;
+    }
+    
+    /**
      * Load system status
      */
     async loadSystemStatus() {
@@ -258,15 +278,21 @@ class WeatherDashboard {
                 regions[point.region_code].y.push(point[this.currentMetric]);
             });
             
+            // Update current regions array to maintain order
+            this.currentRegions = Object.keys(regions);
+            
             // Create traces for each region
             Object.keys(regions).forEach(regionCode => {
                 const region = regions[regionCode];
+                const color = this.getRegionColor(regionCode);
                 traces.push({
                     x: region.x,
                     y: region.y,
                     name: region.name,
                     type: 'scatter',
-                    mode: 'lines+markers'
+                    mode: 'lines+markers',
+                    line: { color: color },
+                    marker: { color: color }
                 });
             });
             

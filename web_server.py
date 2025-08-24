@@ -127,6 +127,8 @@ class WeatherWebServer:
                 app.logger.error(f"Regions API error: {e}")
                 return jsonify({'error': 'Failed to get regions'}), 500
         
+
+        
         @app.route('/api/weather-data', methods=['GET'])
         def get_weather_data():
             """Get weather data with filtering."""
@@ -347,6 +349,8 @@ class WeatherWebServer:
             return regions
         finally:
             conn.close()
+    
+
     
     def get_weather_data_api(self, regions: List[str], metric: str, hours: int, limit: int) -> Dict[str, Any]:
         """Get weather data for API response."""

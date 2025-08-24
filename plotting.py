@@ -12,6 +12,8 @@ from datetime import datetime, timedelta
 from typing import List, Dict, Any, Optional, Tuple
 import yaml
 
+
+
 try:
     import plotext as plt
     PLOTEXT_AVAILABLE = True
@@ -56,6 +58,21 @@ class WeatherPlotter:
         # Export formats
         self.supported_chart_formats = ['png', 'svg', 'pdf']
         self.supported_data_formats = ['csv', 'json', 'excel']
+    
+    def get_region_color(self, region_code: str) -> str:
+        """Generate stable color for a specific region based on its position."""
+        # For plotting, we'll use a simple approach with predefined colors
+        # This ensures consistent colors for static plots
+        hash_value = hash(region_code)
+        color_index = abs(hash_value) % len(self.default_colors)
+        return self.default_colors[color_index]
+    
+    def get_colors_for_regions(self, region_codes: List[str]) -> Dict[str, str]:
+        """Get stable colors for multiple regions."""
+        colors = {}
+        for region_code in region_codes:
+            colors[region_code] = self.get_region_color(region_code)
+        return colors
     
     def get_metric_data(self, metric: str, regions: List[str], hours: int) -> Dict[str, List[Tuple[datetime, float]]]:
         """Get weather data for specified metric and regions."""
@@ -199,14 +216,15 @@ class WeatherPlotter:
             fig, ax = mplt.subplots(figsize=tuple(self.figure_size), dpi=self.dpi)
             
             # Plot data for each region
-            for i, (region_code, region_data) in enumerate(data.items()):
+            for region_code, region_data in data.items():
                 if not region_data:
                     continue
                     
                 timestamps = [point[0] for point in region_data]
                 values = [point[1] for point in region_data]
                 
-                color = self.default_colors[i % len(self.default_colors)]
+                # Use stable color for region
+                color = self.get_region_color(region_code)
                 ax.plot(timestamps, values, label=region_code, color=color, linewidth=2)
             
             # Customize the plot

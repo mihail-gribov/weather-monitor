@@ -19,6 +19,7 @@ class WeatherChart {
         this.currentData = null;
         this.currentLayout = null;
         this.isLoading = false;
+        this.regionColors = {}; // Cache for region colors
         
         // Initialize chart
         this.init();
@@ -27,7 +28,7 @@ class WeatherChart {
     /**
      * Initialize the chart
      */
-    init() {
+    async init() {
         if (!this.container) {
             console.error(`Chart container with id '${this.containerId}' not found`);
             return;
@@ -38,6 +39,9 @@ class WeatherChart {
             this.showError('Plotly.js library is not loaded');
             return;
         }
+
+        // Load region colors synchronously
+        await this.loadRegionColors();
 
         // Create initial empty chart
         this.createEmptyChart();
@@ -136,7 +140,7 @@ class WeatherChart {
 
         Object.keys(groupedData).forEach((regionCode, index) => {
             const regionData = groupedData[regionCode];
-            const color = this.config.colors[index % this.config.colors.length];
+            const color = this.getRegionColor(regionCode);
 
             const trace = {
                 x: regionData.timestamps,
@@ -372,6 +376,34 @@ class WeatherChart {
         return this.currentData;
     }
 
+    /**
+     * Get stable color for a region
+     */
+    getRegionColor(regionCode) {
+        // Check cache first
+        if (this.regionColors[regionCode]) {
+            return this.regionColors[regionCode];
+        }
+        
+        // Return fallback color if not in cache
+        return this.config.colors[0];
+    }
+    
+    /**
+     * Load region colors from API
+     */
+    async loadRegionColors() {
+        try {
+            const response = await fetch('/api/region-colors');
+            if (response.ok) {
+                const data = await response.json();
+                this.regionColors = data.colors || {};
+            }
+        } catch (error) {
+            console.warn('Failed to load region colors:', error);
+        }
+    }
+    
     /**
      * Clear chart
      */
