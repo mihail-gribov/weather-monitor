@@ -342,10 +342,10 @@ class WeatherChart {
         this.isLoading = loading;
         
         if (loading) {
-            this.container.style.opacity = '0.6';
+            this.container.classList.add('loading');
             this.container.style.pointerEvents = 'none';
         } else {
-            this.container.style.opacity = '1';
+            this.container.classList.remove('loading');
             this.container.style.pointerEvents = 'auto';
         }
     }

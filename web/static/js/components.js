@@ -287,8 +287,21 @@ class RegionSelector {
 
     showLoading(show) {
         const loading = document.getElementById('regions-loading');
+        const regionList = document.getElementById('region-checkbox-list');
+        
         if (loading) {
             loading.style.display = show ? 'block' : 'none';
+        }
+        
+        // Add loading class to region list to prevent layout shift
+        if (regionList) {
+            if (show) {
+                regionList.style.opacity = '0.6';
+                regionList.style.pointerEvents = 'none';
+            } else {
+                regionList.style.opacity = '1';
+                regionList.style.pointerEvents = 'auto';
+            }
         }
     }
 

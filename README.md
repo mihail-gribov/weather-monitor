@@ -47,6 +47,7 @@ cd weather-monitor
 2. **Install dependencies:**
 ```bash
 pip install -r requirements.txt
+./setup_dependencies.sh
 ```
 
 3. **Initialize the database:**

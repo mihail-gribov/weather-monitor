@@ -52,6 +52,9 @@ logs/
 charts/
 plots/
 
+# External libraries (downloaded automatically)
+web/static/js/libs/plotly.min.js
+
 # Weather Monitor - Configuration files with sensitive data
 config_local.yaml
 config_production.yaml

@@ -355,8 +355,19 @@ class WeatherDashboard {
      */
     showLoading(show) {
         const loadingIndicator = document.getElementById('loading-indicator');
+        const chartContainer = document.getElementById('chart-container');
+        
         if (loadingIndicator) {
             loadingIndicator.style.display = show ? 'block' : 'none';
+        }
+        
+        // Add loading class to chart container to prevent layout shift
+        if (chartContainer) {
+            if (show) {
+                chartContainer.classList.add('loading');
+            } else {
+                chartContainer.classList.remove('loading');
+            }
         }
     }
 
