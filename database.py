@@ -64,6 +64,18 @@ class WeatherDatabase:
                 )
             ''')
             
+            # Create user_sessions table for dashboard state persistence
+            cursor.execute('''
+                CREATE TABLE IF NOT EXISTS user_sessions (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    session_id TEXT UNIQUE NOT NULL,
+                    dashboard_state TEXT NOT NULL,
+                    created_at TEXT NOT NULL,
+                    updated_at TEXT NOT NULL,
+                    expires_at TEXT NOT NULL
+                )
+            ''')
+            
             # Migrate existing database to add new columns if they don't exist
             self._migrate_database(cursor)
             
@@ -182,5 +194,74 @@ class WeatherDatabase:
                 columns = [description[0] for description in cursor.description]
                 return dict(zip(columns, row))
             return None
+        finally:
+            conn.close()
+    
+    def save_session_state(self, session_id: str, state_data: dict) -> bool:
+        """Save session state to database."""
+        import json
+        from datetime import timedelta
+        
+        conn = sqlite3.connect(self.db_path, detect_types=sqlite3.PARSE_DECLTYPES)
+        try:
+            cursor = conn.cursor()
+            state_json = json.dumps(state_data)
+            now = datetime.now().isoformat()
+            expires_at = (datetime.now() + timedelta(days=7)).isoformat()
+            
+            cursor.execute('''
+                INSERT OR REPLACE INTO user_sessions 
+                (session_id, dashboard_state, created_at, updated_at, expires_at)
+                VALUES (?, ?, ?, ?, ?)
+            ''', (session_id, state_json, now, now, expires_at))
+            
+            conn.commit()
+            logging.info(f"Session state saved for session {session_id}")
+            return True
+        except Exception as e:
+            logging.error(f"Error saving session state: {e}")
+            return False
+        finally:
+            conn.close()
+    
+    def get_session_state(self, session_id: str) -> Optional[dict]:
+        """Get session state from database."""
+        import json
+        
+        conn = sqlite3.connect(self.db_path, detect_types=sqlite3.PARSE_DECLTYPES)
+        try:
+            cursor = conn.cursor()
+            cursor.execute('''
+                SELECT dashboard_state FROM user_sessions 
+                WHERE session_id = ? AND expires_at > ?
+            ''', (session_id, datetime.now().isoformat()))
+            
+            result = cursor.fetchone()
+            if result:
+                return json.loads(result[0])
+            return None
+        except Exception as e:
+            logging.error(f"Error getting session state: {e}")
+            return None
+        finally:
+            conn.close()
+    
+    def cleanup_expired_sessions(self) -> int:
+        """Clean up expired sessions and return number of deleted sessions."""
+        conn = sqlite3.connect(self.db_path, detect_types=sqlite3.PARSE_DECLTYPES)
+        try:
+            cursor = conn.cursor()
+            cursor.execute('''
+                DELETE FROM user_sessions 
+                WHERE expires_at <= ?
+            ''', (datetime.now().isoformat(),))
+            
+            deleted_count = cursor.rowcount
+            conn.commit()
+            logging.info(f"Cleaned up {deleted_count} expired sessions")
+            return deleted_count
+        except Exception as e:
+            logging.error(f"Error cleaning up expired sessions: {e}")
+            return 0
         finally:
             conn.close()

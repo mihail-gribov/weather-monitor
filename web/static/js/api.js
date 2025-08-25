@@ -45,7 +45,12 @@ class WeatherAPI {
 
             return await response.json();
         } catch (error) {
-            console.error('API request failed:', error);
+            // Don't log 404 errors as critical - they're expected for new sessions
+            if (error.message && error.message.includes('404')) {
+                console.log('API request returned 404 (expected for new sessions):', endpoint);
+            } else {
+                console.error('API request failed:', error);
+            }
             throw error;
         }
     }
@@ -282,10 +287,111 @@ class APIUtils {
             timestamp: new Date().toISOString()
         };
     }
+
+    /**
+     * Get session state
+     * @param {string} sessionId - Session ID
+     * @returns {Promise<Object>} - Session state data
+     */
+    async getSessionState(sessionId) {
+        return this.request('/api/session/state', { session_id: sessionId });
+    }
+
+    /**
+     * Save session state
+     * @param {string} sessionId - Session ID
+     * @param {Object} stateData - State data to save
+     * @returns {Promise<Object>} - Save result
+     */
+    async saveSessionState(sessionId, stateData) {
+        try {
+            const url = new URL(this.baseURL + '/api/session/state', window.location.origin);
+            url.searchParams.append('session_id', sessionId);
+
+            const response = await fetch(url, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json'
+                },
+                body: JSON.stringify(stateData)
+            });
+
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+
+            return await response.json();
+        } catch (error) {
+            console.error('Save session state failed:', error);
+            throw error;
+        }
+    }
+
+    /**
+     * Clean up expired sessions
+     * @returns {Promise<Object>} - Cleanup result
+     */
+    async cleanupSessions() {
+        try {
+            const url = new URL(this.baseURL + '/api/session/cleanup', window.location.origin);
+
+            const response = await fetch(url, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json'
+                }
+            });
+
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+
+            return await response.json();
+        } catch (error) {
+            console.error('Cleanup sessions failed:', error);
+            throw error;
+        }
+    }
 }
 
 // Create global API instance
 const weatherAPI = new WeatherAPI();
+
+// Ensure session methods are available on the global instance
+if (!weatherAPI.getSessionState) {
+    weatherAPI.getSessionState = async function(sessionId) {
+        return this.request('/api/session/state', { session_id: sessionId });
+    };
+}
+
+if (!weatherAPI.saveSessionState) {
+    weatherAPI.saveSessionState = async function(sessionId, stateData) {
+        try {
+            const url = new URL(this.baseURL + '/api/session/state', window.location.origin);
+            url.searchParams.append('session_id', sessionId);
+
+            const response = await fetch(url, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json'
+                },
+                body: JSON.stringify(stateData)
+            });
+
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+
+            return await response.json();
+        } catch (error) {
+            console.error('Save session state failed:', error);
+            throw error;
+        }
+    };
+}
 
 // Export for use in other modules
 if (typeof module !== 'undefined' && module.exports) {

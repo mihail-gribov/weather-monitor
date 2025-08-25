@@ -12,6 +12,9 @@ A modern weather monitoring system that collects weather data from Serbian meteo
 - **Responsive web design** with modern UI/UX
 - **Interactive charts** using Plotly.js
 - **RESTful API** for programmatic access
+- **Session state persistence** - dashboard settings are automatically saved and restored
+
+![Weather Monitor Dashboard](docs/dashboard-screenshot.png)
 
 ## 📊 Supported Regions
 
@@ -74,6 +77,7 @@ The modern web interface provides:
 - **Interactive charts** with zoom, pan, and hover details
 - **Responsive design** that works on desktop and mobile
 - **Modern UI** with gradient accents and smooth animations
+- **Session state persistence** - your settings are automatically saved and restored
 
 ```bash
 # Start web server
@@ -235,6 +239,15 @@ CREATE TABLE weather_data (
     precipitation REAL,
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP
 );
+
+CREATE TABLE user_sessions (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    session_id TEXT UNIQUE NOT NULL,
+    dashboard_state TEXT NOT NULL,
+    created_at TEXT NOT NULL,
+    updated_at TEXT NOT NULL,
+    expires_at TEXT NOT NULL
+);
 ```
 
 ## 🌐 API Endpoints
@@ -246,6 +259,11 @@ The web server provides RESTful API endpoints:
 
 - `GET /api/weather-data` - Get weather data with filters
   - Parameters: `regions`, `metric`, `hours`, `limit`
+- `GET /api/session/state` - Get dashboard session state
+  - Parameters: `session_id`
+- `POST /api/session/state` - Save dashboard session state
+  - Parameters: `session_id`, body: JSON state data
+- `POST /api/session/cleanup` - Clean up expired sessions
 
 ### Example API Usage
 ```bash
@@ -254,6 +272,12 @@ curl "http://localhost:8080/api/weather-data?regions=belgrade&metric=temperature
 
 # Get humidity data for multiple regions
 curl "http://localhost:8080/api/weather-data?regions=belgrade,novi_sad&metric=humidity&hours=48"
+
+# Session management examples
+curl "http://localhost:8080/api/session/state?session_id=my_session"
+curl -X POST "http://localhost:8080/api/session/state?session_id=my_session" \
+  -H "Content-Type: application/json" \
+  -d '{"selected_regions":["belgrade"],"selected_metric":"temperature","selected_hours":24}'
 
 
 ```
@@ -287,6 +311,7 @@ curl "http://localhost:8080/api/weather-data?regions=belgrade,novi_sad&metric=hu
 - **Flexible time range selection**
 - **Loading indicators** and error handling
 - **Mobile-friendly** interface
+- **Session persistence** - dashboard settings are automatically saved and restored between visits
 
 ## 🔍 Monitoring and Logs
 

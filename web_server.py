@@ -275,6 +275,66 @@ class WeatherWebServer:
             except Exception as e:
                 app.logger.error(f"Generate report API error: {e}")
                 return jsonify({'error': 'Failed to generate report'}), 500
+
+        @app.route('/api/session/state', methods=['GET'])
+        def get_session_state():
+            """Get current session state."""
+            try:
+                session_id = request.args.get('session_id')
+                if not session_id:
+                    return jsonify({'error': 'Session ID required'}), 400
+                
+                # Get database instance
+                from database import WeatherDatabase
+                db = WeatherDatabase(self.db_path)
+                
+                state = db.get_session_state(session_id)
+                if state:
+                    return jsonify(state)
+                else:
+                    return jsonify({'error': 'Session not found'}), 404
+            except Exception as e:
+                app.logger.error(f"Get session state error: {e}")
+                return jsonify({'error': 'Failed to get session state'}), 500
+
+        @app.route('/api/session/state', methods=['POST'])
+        def save_session_state():
+            """Save current session state."""
+            try:
+                session_id = request.args.get('session_id')
+                if not session_id:
+                    return jsonify({'error': 'Session ID required'}), 400
+                
+                state_data = request.get_json()
+                if not state_data:
+                    return jsonify({'error': 'State data required'}), 400
+                
+                # Get database instance
+                from database import WeatherDatabase
+                db = WeatherDatabase(self.db_path)
+                
+                success = db.save_session_state(session_id, state_data)
+                if success:
+                    return jsonify({'success': True})
+                else:
+                    return jsonify({'error': 'Failed to save session'}), 500
+            except Exception as e:
+                app.logger.error(f"Save session state error: {e}")
+                return jsonify({'error': 'Failed to save session state'}), 500
+
+        @app.route('/api/session/cleanup', methods=['POST'])
+        def cleanup_sessions():
+            """Clean up expired sessions."""
+            try:
+                # Get database instance
+                from database import WeatherDatabase
+                db = WeatherDatabase(self.db_path)
+                
+                deleted_count = db.cleanup_expired_sessions()
+                return jsonify({'success': True, 'deleted_count': deleted_count})
+            except Exception as e:
+                app.logger.error(f"Cleanup sessions error: {e}")
+                return jsonify({'error': 'Failed to cleanup sessions'}), 500
     
     def _register_static_routes(self, app):
         """Register static file routes."""
@@ -632,6 +692,36 @@ class WeatherWebServer:
                 'success': False,
                 'error': 'Failed to generate report'
             }
+
+    def get_session_state_api(self, session_id: str) -> Optional[dict]:
+        """Get session state via API."""
+        try:
+            from database import WeatherDatabase
+            db = WeatherDatabase(self.db_path)
+            return db.get_session_state(session_id)
+        except Exception as e:
+            logging.error(f"Error getting session state via API: {e}")
+            return None
+
+    def save_session_state_api(self, session_id: str, state_data: dict) -> bool:
+        """Save session state via API."""
+        try:
+            from database import WeatherDatabase
+            db = WeatherDatabase(self.db_path)
+            return db.save_session_state(session_id, state_data)
+        except Exception as e:
+            logging.error(f"Error saving session state via API: {e}")
+            return False
+
+    def cleanup_sessions_api(self) -> int:
+        """Clean up expired sessions via API."""
+        try:
+            from database import WeatherDatabase
+            db = WeatherDatabase(self.db_path)
+            return db.cleanup_expired_sessions()
+        except Exception as e:
+            logging.error(f"Error cleaning up sessions via API: {e}")
+            return 0
 
     def _get_content_type(self, format: str) -> str:
         """Get content type for export format."""

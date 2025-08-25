@@ -17,6 +17,10 @@ class WeatherDashboard {
         this.autoRefresh = false;
         this.autoRefreshInterval = null;
         
+        // Session management
+        this.sessionId = null;
+        this.sessionEnabled = true;
+        
         // Initialize dashboard
         this.init();
     }
@@ -28,6 +32,12 @@ class WeatherDashboard {
         try {
             console.log('Initializing dashboard...');
             
+
+            
+            // Initialize session management
+            this.initSession();
+            console.log('Session management initialized');
+            
             // Load initial data
             await this.loadSystemStatus();
             console.log('System status loaded');
@@ -38,6 +48,10 @@ class WeatherDashboard {
             // Set up event listeners
             this.setupEventListeners();
             console.log('Event listeners set up');
+            
+            // Restore session state before loading chart data
+            await this.restoreSessionState();
+            console.log('Session state restored');
             
             // Load initial chart data
             await this.loadChartData();
@@ -59,6 +73,7 @@ class WeatherDashboard {
             metricSelect.addEventListener('change', (e) => {
                 this.currentMetric = e.target.value;
                 this.loadChartData();
+                this.saveSessionState(); // Save state after change
             });
         }
 
@@ -68,6 +83,7 @@ class WeatherDashboard {
             hoursSelect.addEventListener('change', (e) => {
                 this.currentHours = parseInt(e.target.value);
                 this.loadChartData();
+                this.saveSessionState(); // Save state after change
             });
         }
 
@@ -77,8 +93,12 @@ class WeatherDashboard {
             autoRefreshToggle.addEventListener('change', (e) => {
                 this.autoRefresh = e.target.checked;
                 this.toggleAutoRefresh();
+                this.saveSessionState(); // Save state after change
             });
         }
+
+        // Region checkboxes are set up dynamically in populateRegionSelector
+        // No need to set up event listeners here as they're added when regions are loaded
     }
 
     /**
@@ -210,6 +230,7 @@ class WeatherDashboard {
                 }
                 console.log('Selected regions:', this.currentRegions);
                 this.loadChartData();
+                this.saveSessionState(); // Save state after change
             });
         });
         
@@ -407,6 +428,124 @@ class WeatherDashboard {
                 </div>
             `;
         }
+    }
+
+    /**
+     * Generate unique session ID
+     */
+    generateSessionId() {
+        return 'session_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+    }
+
+    /**
+     * Initialize session management
+     */
+    initSession() {
+        // Get or generate session ID
+        this.sessionId = localStorage.getItem('weather_dashboard_session_id');
+        if (!this.sessionId) {
+            this.sessionId = this.generateSessionId();
+            localStorage.setItem('weather_dashboard_session_id', this.sessionId);
+        }
+        
+        console.log('Session initialized with ID:', this.sessionId);
+    }
+
+    /**
+     * Save current dashboard state to session
+     */
+    async saveSessionState() {
+        if (!this.sessionEnabled || !this.sessionId) {
+            return;
+        }
+
+        try {
+            const state = {
+                selected_regions: this.currentRegions,
+                selected_metric: this.currentMetric,
+                selected_hours: this.currentHours,
+                selected_limit: this.currentLimit,
+                auto_refresh: this.autoRefresh,
+                timestamp: new Date().toISOString()
+            };
+            
+            await weatherAPI.saveSessionState(this.sessionId, state);
+            console.log('Session state saved');
+        } catch (error) {
+            console.warn('Failed to save session state:', error);
+        }
+    }
+
+    /**
+     * Restore dashboard state from session
+     */
+    async restoreSessionState() {
+        if (!this.sessionEnabled || !this.sessionId) {
+            return;
+        }
+
+        try {
+            const state = await weatherAPI.getSessionState(this.sessionId);
+            if (state) {
+                // Restore state
+                this.currentRegions = state.selected_regions || [];
+                this.currentMetric = state.selected_metric || 'temperature';
+                this.currentHours = state.selected_hours || 24;
+                this.currentLimit = state.selected_limit || 100;
+                this.autoRefresh = state.auto_refresh || false;
+                
+                // Update UI elements
+                this.updateUIFromState();
+                
+                console.log('Session state restored');
+            } else {
+                console.log('No existing session state found - using defaults');
+            }
+        } catch (error) {
+            // Check if it's a 404 error (session not found) - this is normal for new sessions
+            if (error.message && error.message.includes('404')) {
+                console.log('No existing session state found - using defaults');
+            } else {
+                console.warn('Failed to restore session state:', error);
+            }
+        }
+    }
+
+    /**
+     * Update UI elements from restored state
+     */
+    updateUIFromState() {
+        // Update metric select
+        const metricSelect = document.getElementById('metric-select');
+        if (metricSelect) {
+            metricSelect.value = this.currentMetric;
+        }
+
+        // Update hours select
+        const hoursSelect = document.getElementById('hours-select');
+        if (hoursSelect) {
+            hoursSelect.value = this.currentHours;
+        }
+
+        // Update auto refresh toggle
+        const autoRefreshToggle = document.getElementById('auto-refresh-toggle');
+        if (autoRefreshToggle) {
+            autoRefreshToggle.checked = this.autoRefresh;
+        }
+
+        // Update region checkboxes
+        this.updateRegionCheckboxes();
+    }
+
+    /**
+     * Update region checkboxes based on current state
+     */
+    updateRegionCheckboxes() {
+        const checkboxes = document.querySelectorAll('input[type="checkbox"][id^="region-"]');
+        checkboxes.forEach(checkbox => {
+            const regionCode = checkbox.value;
+            checkbox.checked = this.currentRegions.includes(regionCode);
+        });
     }
 
     /**
